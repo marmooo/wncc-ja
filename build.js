@@ -425,14 +425,14 @@ function insertDB(name, dict) {
 
 const mecab = new MeCab(["mecab"]);
 await parseLemma();
+db.query(`
+  CREATE INDEX IF NOT EXISTS words_index ON words(lemma)
+`);
 await parseLeft2();
 await parseLeft3();
 await parseLeft4();
 await parseRight3();
 await parseRight4();
-db.query(`
-  CREATE INDEX IF NOT EXISTS words_index ON words(lemma)
-`);
 db.query(`
   CREATE INDEX IF NOT EXISTS collocations_index ON collocations(wordid)
 `);
