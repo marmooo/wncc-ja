@@ -1,3 +1,4 @@
 node_modules/
 nwc2010-ngrams
-wncc-ja.db
+local.db
+remote.db

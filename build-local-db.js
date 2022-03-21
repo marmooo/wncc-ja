@@ -13,7 +13,7 @@ const ppp4b = ["を", "へ", "と", "から", "より", "で"]; // 格助詞
 const ppp4Verb = pppLinker.concat(ppp4a).concat(ppp4b);
 const ppp5Verb = ["が", "に"];
 
-const db = new DB("wncc-ja.db");
+const db = new DB("local.db");
 db.query(`
   CREATE TABLE IF NOT EXISTS words (
     wordid INTEGER PRIMARY KEY AUTOINCREMENT,
