@@ -542,15 +542,13 @@ function copyToClipboard(text) {
 }
 async function searchCollocations(lemma) {
     const obj = document.getElementById("collocations");
-    const row1 = await dbWorker.db.query(`SELECT wordid FROM words WHERE lemma="${escapeSql(lemma)}"`);
-    if (row1[0]) {
-        const wordid = row1[0].wordid;
-        const row2 = await dbWorker.db.query(`SELECT word FROM collocations WHERE wordid=${wordid} ORDER BY count DESC`);
-        while(obj.firstChild){
-            obj.removeChild(obj.firstChild);
-        }
-        for (const item of row2){
-            const word = item.word;
+    const row = await dbWorker.db.query(`SELECT words FROM collocations WHERE lemma="${escapeSql(lemma)}"`);
+    while(obj.firstChild){
+        obj.removeChild(obj.firstChild);
+    }
+    if (row[0]) {
+        const words = JSON.parse(row[0].words);
+        for (const word of words){
             const button = document.createElement("button");
             button.className = "btn btn-outline-secondary m-1";
             button.textContent = word;
@@ -558,10 +556,6 @@ async function searchCollocations(lemma) {
                 copyToClipboard(button.textContent);
             };
             obj.appendChild(button);
-        }
-    } else {
-        while(obj.firstChild){
-            obj.removeChild(obj.firstChild);
         }
     }
 }
