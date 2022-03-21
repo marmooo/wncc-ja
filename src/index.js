@@ -99,12 +99,12 @@ async function searchCollocations(lemma) {
 async function loadDBWorker() {
   const config = {
     from: "jsonconfig",
-    configUrl: "/db/config.json",
+    configUrl: "/wncc-ja/db/config.json",
   };
   dbWorker = await createDbWorker(
     [config],
-    "/sql.js-httpvfs/sqlite.worker.js",
-    "/sql.js-httpvfs/sql-wasm.wasm",
+    "/wncc-ja/sql.js-httpvfs/sqlite.worker.js",
+    "/wncc-ja/sql.js-httpvfs/sql-wasm.wasm",
   );
   searchCollocations("走る");
 }
