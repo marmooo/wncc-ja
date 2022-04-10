@@ -15,8 +15,8 @@ Web N-gram based Collocation Corpus (Japanese)
 deno run --allow-read --allow-write build-local-db.js
 deno run --allow-read --allow-write build-remote-db.js
 bash optimize.sh
-bash create_db.sh local.db docs/db
 bash build.sh
+bash create_db.sh remote.db docs/db
 ```
 
 ## Related projects
