@@ -14,6 +14,8 @@ const ppp4Verb = pppLinker.concat(ppp4a).concat(ppp4b);
 const ppp5Verb = ["が", "に"];
 
 const db = new DB("local.db");
+dB.query("pragma synchronouse=OFF");
+dB.query("pragma journal_mode=WAL");
 db.query(`
   CREATE TABLE IF NOT EXISTS words (
     wordid INTEGER PRIMARY KEY AUTOINCREMENT,
