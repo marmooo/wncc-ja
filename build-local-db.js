@@ -1,6 +1,6 @@
 import { readLines } from "https://deno.land/std/io/mod.ts";
-import { MeCab } from "https://deno.land/x/deno_mecab/mod.ts";
-import { DB } from "https://deno.land/x/sqlite/mod.ts";
+import { MeCab } from "./deps.ts";
+import { DB } from "./deps.ts";
 
 const pppAdjective = ["が"];
 const pppLinker = ["は", "も", "こそ", "でも", "しか", "さえ"]; // 係助詞
