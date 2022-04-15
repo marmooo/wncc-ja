@@ -541,6 +541,8 @@ function copyToClipboard(text) {
     alert("クリップボードにコピーしました。");
 }
 async function searchCollocations(lemma) {
+    const loading = document.getElementById("loading");
+    loading.classList.remove("d-none");
     const obj = document.getElementById("collocations");
     const row = await dbWorker.db.query(`SELECT words FROM collocations WHERE lemma="${escapeSql(lemma)}"`);
     while(obj.firstChild){
@@ -558,6 +560,7 @@ async function searchCollocations(lemma) {
             obj.appendChild(button);
         }
     }
+    loading.classList.add("d-none");
 }
 async function loadDBWorker() {
     const config = {
@@ -567,7 +570,7 @@ async function loadDBWorker() {
     dbWorker = await createDbWorker([
         config
     ], "/wncc-ja/sql.js-httpvfs/sqlite.worker.js", "/wncc-ja/sql.js-httpvfs/sql-wasm.wasm");
-    searchCollocations("走る");
+    await searchCollocations("走る");
 }
 let dbWorker;
 loadConfig();
