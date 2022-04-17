@@ -570,7 +570,6 @@ async function loadDBWorker() {
     dbWorker = await createDbWorker([
         config
     ], "/wncc-ja/sql.js-httpvfs/sqlite.worker.js", "/wncc-ja/sql.js-httpvfs/sql-wasm.wasm");
-    await searchCollocations("走る");
 }
 let dbWorker;
 loadConfig();
