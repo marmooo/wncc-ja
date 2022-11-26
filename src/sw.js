@@ -1,11 +1,11 @@
-var CACHE_NAME = "2022-10-08 11:03";
+var CACHE_NAME = "2022-11-26 12:58";
 var urlsToCache = [
   "/wncc-ja/",
   "/wncc-ja/index.js",
   "/wncc-ja/sql.js-httpvfs/sql-wasm.wasm",
   "/wncc-ja/sql.js-httpvfs/sqlite.worker.js",
   "/wncc-ja/favicon/favicon.svg",
-  "https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css",
+  "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css",
 ];
 
 self.addEventListener("install", function (event) {
