@@ -12,7 +12,7 @@ Web N-gram based Collocation Corpus (Japanese)
 ## Build
 
 ```
-deno run --allow-read --allow-write build-local-db.js
+deno run --allow-read --allow-write --allow-run build-local-db.js
 deno run --allow-read --allow-write build-remote-db.js
 bash optimize.sh
 bash build.sh
