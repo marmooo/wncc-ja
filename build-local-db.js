@@ -14,8 +14,8 @@ const ppp4Verb = pppLinker.concat(ppp4a).concat(ppp4b);
 const ppp5Verb = ["が", "に"];
 
 const db = new DB("local.db");
-dB.query("pragma synchronouse=OFF");
-dB.query("pragma journal_mode=WAL");
+db.query("pragma synchronouse=OFF");
+db.query("pragma journal_mode=WAL");
 db.query(`
   CREATE TABLE IF NOT EXISTS words (
     wordid INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -106,8 +106,10 @@ async function parseLeft2() {
 
 function parseAdverb(parsed, words, sentence, count, dict) {
   // 「一人」などの接尾辞の関係が抽出されやすい
-  if (parsed[0].feature == "副詞" &&
-    (parsed[1].feature == "動詞" || parsed[1].feature == "形容詞")) {
+  if (
+    parsed[0].feature == "副詞" &&
+    (parsed[1].feature == "動詞" || parsed[1].feature == "形容詞")
+  ) {
     const newSentence = words[0] + " " + parsed[1].originalForm;
     updateDict(dict, words[0], newSentence, count);
     updateDict(dict, parsed[1].originalForm, newSentence, count);
@@ -116,18 +118,22 @@ function parseAdverb(parsed, words, sentence, count, dict) {
 
 function parseLeftNoun2(parsed, words, sentence, count, dict) {
   // 「一人」などの接尾辞の関係が抽出されやすい
-  if (parsed[0].feature == "名詞" &&
+  if (
+    parsed[0].feature == "名詞" &&
     parsed[1].feature == "名詞" &&
-    parsed[1].featureDetails[0] != "数") {
+    parsed[1].featureDetails[0] != "数"
+  ) {
     updateDict(dict, parsed[0].originalForm, sentence, count);
     updateDict(dict, words[1], sentence, count);
   }
 }
 
 function parseLeftAdjective2(parsed, words, sentence, count, dict) {
-  if (parsed[0].feature == "形容詞" &&
+  if (
+    parsed[0].feature == "形容詞" &&
     parsed[1].feature == "名詞" &&
-    parsed[1].featureDetails[0] != "数") {
+    parsed[1].featureDetails[0] != "数"
+  ) {
     updateDict(dict, parsed[0].originalForm, sentence, count);
     updateDict(dict, words[1], sentence, count);
   }
@@ -137,19 +143,24 @@ function parseLeftVerb2(parsed, words, sentence, count, dict) {
   // 体現接続特殊にはノイズがあるため削除する
   // 結果として「走法」などの使える語句も多少消えるが、共起語ではないので問題ない
   // 残したいなら SudachiDict などで正確に判定したほうが良い
-  if (parsed[0].feature == "動詞" &&
+  if (
+    parsed[0].feature == "動詞" &&
+    !parsed[0].featureDetails[0].startsWith("接尾") &&
     !parsed[0].conjugationForms[1].startsWith("体言接続特殊") &&
     parsed[1].feature == "名詞" &&
-    parsed[1].featureDetails[0] != "数") {
+    parsed[1].featureDetails[0] != "数"
+  ) {
     updateDict(dict, parsed[0].originalForm, sentence, count);
     updateDict(dict, words[1], sentence, count);
   }
 }
 
 function parseAdnominalAdjective2(parsed, words, sentence, count, dict) {
-  if (parsed[0].feature == "連体詞" &&
+  if (
+    parsed[0].feature == "連体詞" &&
     parsed[1].feature == "名詞" &&
-    parsed[1].featureDetails[0] != "数") {
+    parsed[1].featureDetails[0] != "数"
+  ) {
     updateDict(dict, words[0], sentence, count);
     updateDict(dict, words[1], sentence, count);
   }
@@ -188,7 +199,8 @@ function parseLeftAdjective3(parsed, words, sentence, count, dict) {
     parsed[0].conjugationForms[0] == "連用タ接続" &&
     parsed[1].surface == "た" &&
     parsed[2].feature == "名詞" &&
-    parsed[2].featureDetails[0] != "数") {
+    parsed[2].featureDetails[0] != "数"
+  ) {
     const newSentence = parsed[0].originalForm + " " + parsed[2].surface;
     updateDict(dict, parsed[0].originalForm, newSentence, count);
     updateDict(dict, words[2], newSentence, count);
@@ -277,8 +289,9 @@ function parseLeftVerb4(parsed, words, sentence, count, dict) {
     ) {
       const newSentence = parsed[0].surface + " " + parsed[1].originalForm +
         " " + parsed[3].surface;
-      updateDict(dict, words[0], sentence, count);
-      updateDict(dict, words[3], sentence, count);
+      console.log(sentence, newSentence);
+      updateDict(dict, words[0], newSentence, count);
+      updateDict(dict, words[3], newSentence, count);
     }
   }
 }
@@ -298,7 +311,7 @@ async function parseRight3() {
     if (!/^[ぁ-んァ-ヴ\u4E00-\u9FFF ]+$/.test(sentence)) continue;
     // 一文字のひらがなカタカナは無視
     if (/^[ぁ-んァ-ヴ]$/.test(words[0])) continue;
-    if (!/^[ぁ-んァ-ヴ]$/.test(words[1])) continue;  // 助詞の簡易チェック
+    if (!/^[ぁ-んァ-ヴ]$/.test(words[1])) continue; // 助詞の簡易チェック
     const count = parseInt(arr.slice(-1));
     const parsed = await mecab.parse(sentence);
     if (parsed.length == words.length) {
@@ -312,7 +325,11 @@ async function parseRight3() {
 
 function parseRightNoun3(parsed, words, sentence, count, dict) {
   if (ppp3Noun.includes(words[1])) {
-    if (parsed[0].feature == "名詞" && parsed[2].feature == "名詞") {
+    if (
+      parsed[0].feature == "名詞" &&
+      !parsed[0].featureDetails[0].startsWith("接尾") &&
+      parsed[2].feature == "名詞"
+    ) {
       updateDict(dict, words[0], sentence, count);
       updateDict(dict, words[2], sentence, count);
     }
@@ -321,7 +338,9 @@ function parseRightNoun3(parsed, words, sentence, count, dict) {
 
 function parseRightAdjective3(parsed, words, sentence, count, dict) {
   if (ppp3Adjective.includes(words[1])) {
-    if (parsed[0].feature == "名詞" && parsed[2].feature == "形容詞") {
+    if (parsed[0].feature == "名詞" &&
+      !parsed[0].featureDetails[0].startsWith("接尾") &&
+      parsed[2].feature == "形容詞") {
       const newSentence = words.slice(0, -1).join(" ") + " " +
         parsed[2].originalForm;
       updateDict(dict, words[0], newSentence, count);
@@ -333,15 +352,21 @@ function parseRightAdjective3(parsed, words, sentence, count, dict) {
 function parseRightVerb3(parsed, words, sentence, count, dict) {
   if (ppp4Verb.includes(words[1])) {
     // 未然形だけは意味が変わる可能性があるので除外
-    if (parsed[0].feature == "名詞" && parsed[2].feature == "動詞" &&
-      parsed[2].conjugationForms[1] != "未然形") {
+    if (
+      parsed[0].feature == "名詞" &&
+      !parsed[0].featureDetails[0].startsWith("接尾") &&
+      parsed[2].feature == "動詞" &&
+      parsed[2].conjugationForms[1] != "未然形"
+    ) {
       const newSentence = words.slice(0, -1).join(" ") + " " +
         parsed[2].originalForm;
       updateDict(dict, words[0], newSentence, count);
       updateDict(dict, parsed[2].originalForm, newSentence, count);
     } else if (
       parsed[0].feature == "名詞" &&
-      parsed[2].feature == "名詞" && parsed[2].featureDetails.includes("サ変接続")
+      !parsed[0].featureDetails[0].startsWith("接尾") &&
+      parsed[2].feature == "名詞" &&
+      parsed[2].featureDetails.includes("サ変接続")
     ) {
       updateDict(dict, words[0], sentence, count);
       updateDict(dict, words[2], sentence, count);
@@ -364,7 +389,7 @@ async function parseRight4() {
     if (!/^[ぁ-んァ-ヴ\u4E00-\u9FFF ]+$/.test(sentence)) continue;
     // 一文字のひらがなカタカナは無視
     if (/^[ぁ-んァ-ヴ]$/.test(words[0])) continue;
-    if (!/^[ぁ-んァ-ヴ]$/.test(words[1])) continue;  // 助詞の簡易チェック
+    if (!/^[ぁ-んァ-ヴ]$/.test(words[1])) continue; // 助詞の簡易チェック
     const count = parseInt(arr.slice(-1));
     const parsed = await mecab.parse(sentence);
     if (parsed.length == words.length) {
@@ -380,6 +405,7 @@ function parseRightVerb4(parsed, words, sentence, count, dict) {
     // ネコが疾走する
     if (
       parsed[0].feature == "名詞" &&
+      !parsed[0].featureDetails[0].startsWith("接尾") &&
       parsed[2].feature == "名詞" &&
       parsed[2].featureDetails.includes("サ変接続") &&
       parsed[3].feature == "動詞" &&
@@ -390,10 +416,11 @@ function parseRightVerb4(parsed, words, sentence, count, dict) {
         parsed[3].originalForm;
       updateDict(dict, words[0], newSentence, count);
       updateDict(dict, words[2], newSentence, count);
-    // 未然形だけは意味が変わる可能性があるので除外
-    // 視線を走らせる
+      // 未然形だけは意味が変わる可能性があるので除外
+      // 視線を走らせる
     } else if (
       parsed[0].feature == "名詞" &&
+      !parsed[0].featureDetails[0].startsWith("接尾") &&
       parsed[2].feature == "動詞" &&
       parsed[3].feature == "動詞" &&
       parsed[3].conjugationForms[1] != "未然形"
