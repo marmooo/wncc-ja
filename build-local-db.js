@@ -11,7 +11,7 @@ const ppp3Noun = ppp3a.concat(ppp3b);
 const ppp4a = ["ばかり", "まで", "だけ", "ほど", "くらい"]; // 副助詞
 const ppp4b = ["を", "へ", "と", "から", "より", "で"]; // 格助詞
 const ppp4Verb = pppLinker.concat(ppp4a).concat(ppp4b);
-const ppp5Verb = ["が", "に"];
+// const ppp5Verb = ["が", "に"];
 
 const db = new DB("local.db");
 db.query("pragma synchronouse=OFF");
@@ -104,7 +104,7 @@ async function parseLeft2() {
   insertDB("parseLeft2", dict);
 }
 
-function parseAdverb(parsed, words, sentence, count, dict) {
+function parseAdverb(parsed, words, _sentence, count, dict) {
   // 「一人」などの接尾辞の関係が抽出されやすい
   if (
     parsed[0].feature == "副詞" &&
@@ -193,7 +193,7 @@ async function parseLeft3() {
   insertDB("parseLeft3", dict);
 }
 
-function parseLeftAdjective3(parsed, words, sentence, count, dict) {
+function parseLeftAdjective3(parsed, words, _sentence, count, dict) {
   if (
     parsed[0].feature == "形容詞" &&
     parsed[0].conjugationForms[0] == "連用タ接続" &&
@@ -336,11 +336,13 @@ function parseRightNoun3(parsed, words, sentence, count, dict) {
   }
 }
 
-function parseRightAdjective3(parsed, words, sentence, count, dict) {
+function parseRightAdjective3(parsed, words, _sentence, count, dict) {
   if (ppp3Adjective.includes(words[1])) {
-    if (parsed[0].feature == "名詞" &&
+    if (
+      parsed[0].feature == "名詞" &&
       !parsed[0].featureDetails[0].startsWith("接尾") &&
-      parsed[2].feature == "形容詞") {
+      parsed[2].feature == "形容詞"
+    ) {
       const newSentence = words.slice(0, -1).join(" ") + " " +
         parsed[2].originalForm;
       updateDict(dict, words[0], newSentence, count);
@@ -399,7 +401,7 @@ async function parseRight4() {
   insertDB("parseRight4", dict);
 }
 
-function parseRightVerb4(parsed, words, sentence, count, dict) {
+function parseRightVerb4(parsed, words, _sentence, count, dict) {
   if (ppp4Verb.includes(words[1])) {
     // 未然形だけは意味が変わる可能性があるので除外
     // ネコが疾走する
