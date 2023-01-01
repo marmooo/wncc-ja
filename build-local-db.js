@@ -289,7 +289,6 @@ function parseLeftVerb4(parsed, words, sentence, count, dict) {
     ) {
       const newSentence = parsed[0].surface + " " + parsed[1].originalForm +
         " " + parsed[3].surface;
-      console.log(sentence, newSentence);
       updateDict(dict, words[0], newSentence, count);
       updateDict(dict, words[3], newSentence, count);
     }
