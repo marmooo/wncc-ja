@@ -27,7 +27,8 @@ remoteDB.transaction((data) => {
     const [lemma, wordid] = row;
     const collocations = getCollocations.values(wordid);
     if (collocations.length > 0) {
-      insertCollocation.run(lemma, JSON.stringify(collocations));
+      const result = collocations.map((c) => c[0]);
+      insertCollocation.run(lemma, JSON.stringify(result));
     }
   }
 })(words);
