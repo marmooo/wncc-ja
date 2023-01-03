@@ -1,6 +1,6 @@
 import { readLines } from "https://deno.land/std/io/mod.ts";
 import { MeCab } from "./deps.ts";
-import { DB } from "./deps.ts";
+import { Database } from "./deps.ts";
 
 const pppAdjective = ["が"];
 const pppLinker = ["は", "も", "こそ", "でも", "しか", "さえ"]; // 係助詞
@@ -13,30 +13,30 @@ const ppp4b = ["を", "へ", "と", "から", "より", "で"]; // 格助詞
 const ppp4Verb = pppLinker.concat(ppp4a).concat(ppp4b);
 // const ppp5Verb = ["が", "に"];
 
-const db = new DB("local.db");
-db.query("pragma synchronouse=OFF");
-db.query("pragma journal_mode=WAL");
-db.query(`
+const db = new Database("local.db");
+db.run("pragma synchronouse=OFF");
+db.run("pragma journal_mode=MEMORY");
+db.run(`
   CREATE TABLE IF NOT EXISTS words (
     wordid INTEGER PRIMARY KEY AUTOINCREMENT,
     lemma TEXT,
     count INTEGER
   )
 `);
-db.query(`
+db.run(`
   CREATE TABLE IF NOT EXISTS collocations (
     wordid INTEGER,
     word TEXT,
     count INTEGER
   )
 `);
-const getWordId = db.prepareQuery(`
-  SELECT wordid FROM words WHERE lemma = ?
+const getWordId = db.prepare(`
+  SELECT wordid FROM words WHERE lemma = ? LIMIT 1
 `);
-const insertLemma = db.prepareQuery(`
+const insertLemma = db.prepare(`
   INSERT INTO words (lemma, count) VALUES(?, ?);
 `);
-const insertCollocation = db.prepareQuery(`
+const insertCollocation = db.prepare(`
   INSERT INTO collocations (wordid, word, count) VALUES(?, ?, ?);
 `);
 
@@ -56,10 +56,10 @@ function updateDict(dict, lemma, sentence, count) {
 }
 
 async function parseLemma() {
-  db.query("begin");
   const fileReader = await Deno.open(
     "nwc2010-ngrams/word/over999/1gms/1gm-0000",
   );
+  const result = [];
   for await (const line of readLines(fileReader)) {
     if (!line) continue;
     const arr = line.split(/\s/);
@@ -69,9 +69,13 @@ async function parseLemma() {
     // 一文字のひらがなカタカナは無視
     if (/^[ぁ-んァ-ヴ]$/.test(lemma)) continue;
     const count = parseInt(arr[1]);
-    insertLemma.execute([lemma, count]);
+    result.push([lemma, count]);
   }
-  db.query("commit");
+  db.transaction((result) => {
+    result.forEach((row) => {
+      insertLemma.run(...row);
+    });
+  })(result);
 }
 
 async function parseLeft2() {
@@ -266,7 +270,7 @@ async function parseLeft4() {
   insertDB("parseLeft4", dict);
 }
 
-function parseLeftVerb4(parsed, words, sentence, count, dict) {
+function parseLeftVerb4(parsed, words, _sentence, count, dict) {
   if (parsed[3].feature == "名詞" && parsed[3].featureDetails[0] != "数") {
     // 走り続けた猫 --> 走る猫
     if (
@@ -435,27 +439,25 @@ function parseRightVerb4(parsed, words, _sentence, count, dict) {
 }
 
 function insertDB(name, dict) {
-  db.query("begin");
-  for (const [word, collocations] of Object.entries(dict)) {
-    for (const [collocation, count] of collocations) {
-      const [wordIds] = getWordId.all([word]);
-      if (wordIds) {
-        const wordId = wordIds[0];
-        if (wordId) {
-          insertCollocation.execute([wordId, collocation, count]);
+  db.transaction((data) => {
+    for (const [word, collocations] of Object.entries(data)) {
+      for (const [collocation, count] of collocations) {
+        const row = getWordId.value(word);
+        if (row) {
+          const wordId = row[0];
+          insertCollocation.run(wordId, collocation, count);
         } else {
           console.log("error: " + word);
         }
       }
     }
-  }
-  db.query("commit");
+  })(dict);
   console.log(name);
 }
 
 const mecab = new MeCab(["mecab"]);
 await parseLemma();
-db.query(`
+db.run(`
   CREATE INDEX IF NOT EXISTS words_index ON words(lemma)
 `);
 await parseLeft2();
@@ -463,6 +465,6 @@ await parseLeft3();
 await parseLeft4();
 await parseRight3();
 await parseRight4();
-db.query(`
+db.run(`
   CREATE INDEX IF NOT EXISTS collocations_index ON collocations(wordid)
 `);
