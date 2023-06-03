@@ -1,4 +1,4 @@
-var CACHE_NAME = "2023-02-02 09:35";
+var CACHE_NAME = "2023-06-03 09:05";
 var urlsToCache = [
   "/wncc-ja/",
   "/wncc-ja/index.js",
