@@ -58,11 +58,14 @@ async function loadDBWorker() {
     from: "jsonconfig",
     configUrl: "/wncc-ja/db/config.json",
   };
+  const loading = document.getElementById("loading");
+  loading.classList.remove("d-none");
   dbWorker = await createDbWorker(
     [config],
     "/wncc-ja/sql.js-httpvfs/sqlite.worker.js",
     "/wncc-ja/sql.js-httpvfs/sql-wasm.wasm",
   );
+  loading.classList.add("d-none");
 }
 
 let dbWorker;
