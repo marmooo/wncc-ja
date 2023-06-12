@@ -105,6 +105,7 @@ async function parseLemma() {
     const count = parseInt(arr[1]);
     result.push([lemma, count]);
   }
+  fileReader.close();
   db.transaction((result) => {
     result.forEach((row) => {
       insertLemma.run(...row);
@@ -126,6 +127,7 @@ async function getSentences(filepath) {
     sentences.push(sentence);
     counts.push(count);
   }
+  fileReader.close();
   return [sentences, counts];
 }
 
