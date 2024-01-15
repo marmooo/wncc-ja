@@ -1,6 +1,6 @@
 import { readLines } from "https://deno.land/std/io/mod.ts";
-import { Database } from "./deps.ts";
-import $ from "https://deno.land/x/dax/mod.ts";
+import { Database } from "x/sqlite3";
+import { $ } from "deno_dx";
 
 const batchSize = 1000;
 const pppAdjective = ["が"];
@@ -45,7 +45,7 @@ const insertCollocation = db.prepare(`
 // deno_mecab style Mecab + IPADic parser, but 30x faster
 async function parseMecab(filepath) {
   const result = [];
-  const stdout = await $`mecab ${filepath}`.text();
+  const stdout = await $`mecab ${filepath}`;
   stdout.slice(0, -4).split("\nEOS\n").forEach((sentence) => {
     const morphemes = [];
     sentence.replace(/\t/g, ",").split("\n").forEach((line) => {
