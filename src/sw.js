@@ -1,4 +1,4 @@
-const CACHE_NAME = "2024-01-29 00:40";
+const CACHE_NAME = "2024-02-25 09:42";
 const urlsToCache = [
   "/wncc-ja/",
   "/wncc-ja/index.js",
