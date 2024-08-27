@@ -1,4 +1,4 @@
-import { readLines } from "https://deno.land/std/io/mod.ts";
+import { TextLineStream } from "@std/streams";
 import { Database } from "x/sqlite3";
 import { $ } from "zx";
 
@@ -90,11 +90,12 @@ function updateDict(dict, lemma, sentence, count) {
 }
 
 async function parseLemma() {
-  const fileReader = await Deno.open(
-    "nwc2010-ngrams/word/over999/1gms/1gm-0000",
-  );
   const result = [];
-  for await (const line of readLines(fileReader)) {
+  const file = await Deno.open("nwc2010-ngrams/word/over999/1gms/1gm-0000");
+  const lineStream = file.readable
+    .pipeThrough(new TextDecoderStream())
+    .pipeThrough(new TextLineStream());
+  for await (const line of lineStream) {
     if (!line) continue;
     const arr = line.split(/\s/);
     const lemma = arr[0];
@@ -105,7 +106,6 @@ async function parseLemma() {
     const count = parseInt(arr[1]);
     result.push([lemma, count]);
   }
-  fileReader.close();
   db.transaction((result) => {
     result.forEach((row) => {
       insertLemma.run(...row);
@@ -113,11 +113,14 @@ async function parseLemma() {
   })(result);
 }
 
-async function getSentences(filepath) {
+async function getSentences(filePath) {
   const sentences = [];
   const counts = [];
-  const fileReader = await Deno.open(filepath);
-  for await (const line of readLines(fileReader)) {
+  const file = await Deno.open(filePath);
+  const lineStream = file.readable
+    .pipeThrough(new TextDecoderStream())
+    .pipeThrough(new TextLineStream());
+  for await (const line of lineStream) {
     if (!line) continue;
     const pos = line.lastIndexOf("\t");
     const sentence = line.slice(0, pos);
@@ -127,7 +130,6 @@ async function getSentences(filepath) {
     sentences.push(sentence);
     counts.push(count);
   }
-  fileReader.close();
   return [sentences, counts];
 }
 
