@@ -2,6 +2,6 @@
   "imports": {
     "@std/streams": "jsr:@std/streams@^1.0.3",
     "x/sqlite3": "https://deno.land/x/sqlite3@0.11.1/mod.ts",
-    "zx": "npm:zx@7.2.3"
+    "zx": "npm:zx@8.1.4"
   }
 }
