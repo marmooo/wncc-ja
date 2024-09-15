@@ -96,7 +96,6 @@ async function parseLemma() {
     .pipeThrough(new TextDecoderStream())
     .pipeThrough(new TextLineStream());
   for await (const line of lineStream) {
-    if (!line) continue;
     const arr = line.split(/\s/);
     const lemma = arr[0];
     // 数字記号は無視
@@ -121,7 +120,6 @@ async function getSentences(filePath) {
     .pipeThrough(new TextDecoderStream())
     .pipeThrough(new TextLineStream());
   for await (const line of lineStream) {
-    if (!line) continue;
     const pos = line.lastIndexOf("\t");
     const sentence = line.slice(0, pos);
     // 数字記号は無視
