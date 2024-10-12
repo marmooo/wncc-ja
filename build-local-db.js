@@ -1,5 +1,5 @@
 import { TextLineStream } from "@std/streams";
-import { Database } from "x/sqlite3";
+import { Database } from "@db/sqlite";
 import { $ } from "zx";
 
 const batchSize = 1000;
