@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "sql.js-httpvfs": "^0.8.12",
-    "zx": "^8.4.1"
-  }
-}
