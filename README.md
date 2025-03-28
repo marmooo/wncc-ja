@@ -13,7 +13,6 @@ sudo apt install mecab mecab-ipadic-utf8
 ## Installation
 
 - install [N-gram corpus](http://www.s-yata.jp/corpus/nwc2010/ngrams/) (free)
-- `npm install`
 
 ## Build
 
@@ -31,4 +30,4 @@ bash build.sh
 
 ## License
 
-CC BY 4.0
+CC-BY-4.0
