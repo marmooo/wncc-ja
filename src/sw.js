@@ -1,6 +1,5 @@
-const CACHE_NAME = "2025-09-09 00:19";
+const CACHE_NAME = "2026-02-23 00:00";
 const urlsToCache = [
-  "/wncc-ja/",
   "/wncc-ja/index.js",
   "/wncc-ja/sql.js-httpvfs/sql-wasm.wasm",
   "/wncc-ja/sql.js-httpvfs/sqlite.worker.js",
