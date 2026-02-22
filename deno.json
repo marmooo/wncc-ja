@@ -5,6 +5,6 @@
     "@deno/emit": "jsr:@deno/emit@^0.46.0",
     "@std/streams": "jsr:@std/streams@^1.0.17",
     "sql.js-httpvfs": "npm:sql.js-httpvfs@0.8.12",
-    "zx": "npm:zx@^8.5.2-lite"
+    "zx": "npm:zx@^8.5.5-lite"
   }
 }
